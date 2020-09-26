@@ -1,0 +1,69 @@
+pipeline {
+    agent any
+
+   tools {nodejs "node"}
+
+    stages {
+        stage('Build') {
+            steps {
+                // Get some code from a GitHub repository
+                git 'https://github.com/sushilpanwar091/angular7-crud.git'
+
+                // Run Maven on a Unix agent.
+                sh "npm install"
+                sh "npm run build"
+                sh "tar -czvf dist/kingsfirstUI.tar.gz dist/employee-management/*"
+
+                // To run Maven on a Windows agent, use
+                // bat "mvn -Dmaven.test.failure.ignore=true clean package"
+            }
+
+            post {
+                // If Maven was able to run the tests, even if some of the test
+                // failed, record the test results and archive the jar file.
+                success {
+                    sh "ls -lrth dist/"
+                    archiveArtifacts 'dist/*.tar.gz'
+                    sh "ls -lrth dist/"
+                }
+            }
+        }
+        stage('Publish') {
+            steps {
+               
+                //sh "zip -r kingsfirstUI.zip dist/*"
+                sh "ls -lrth dist/"
+                sh "ls -lrth"
+                
+            }
+
+            post {
+                // If Maven was able to run the tests, even if some of the test
+                // failed, record the test results and archive the jar file.
+                success {
+                   sh "echo 'publish executed'"
+                }
+            }
+        }
+        stage('Deploy') {
+            steps {
+                sh "ssh jullianna_03_hroundb_com@35.198.228.0 'rm -rf /tmp/*.tar.gz'"
+                sh "ssh jullianna_03_hroundb_com@35.198.228.0 'rm -rf /tmp/dist'"
+                sh "scp dist/*.tar.gz jullianna_03_hroundb_com@35.198.228.0:/tmp/"
+                sh "ssh jullianna_03_hroundb_com@35.198.228.0 'tar -xzvf /tmp/*.tar.gz -C /tmp/'"
+                sh "ssh jullianna_03_hroundb_com@35.198.228.0 'rm -rf /var/www/html/*'"
+                sh "ssh jullianna_03_hroundb_com@35.198.228.0 'mv /tmp/dist/employee-management/* /var/www/html/'"
+                sh "ssh jullianna_03_hroundb_com@35.198.228.0 'rm -rf /tmp/dist; rm -rf /tmp/*.tar.gz'"
+				
+            }
+
+            post {
+                // If Maven was able to run the tests, even if some of the test
+                // failed, record the test results and archive the jar file.
+                success {
+                    sh "echo 'deploy executed'"
+                }
+            }
+        }
+    }
+}
