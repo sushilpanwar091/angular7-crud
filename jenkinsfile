@@ -49,7 +49,7 @@ pipeline {
             steps {
                 sh "ssh -o StrictHostKeyChecking=no jullianna_03_hroundb_com@35.240.131.22 'rm -rf /tmp/*.tar.gz'"
                 sh "ssh -o StrictHostKeyChecking=no jullianna_03_hroundb_com@35.240.131.22 'rm -rf /tmp/dist'"
-                sh "scp -o StrictHostKeyChecking=no dist/*.tar.gz jullianna_03_hroundb_com@35.198.228.0:/tmp/"
+                sh "scp -o StrictHostKeyChecking=no dist/*.tar.gz jullianna_03_hroundb_com@35.240.131.22:/tmp/"
                 sh "ssh -o StrictHostKeyChecking=no jullianna_03_hroundb_com@35.240.131.22 'tar -xzvf /tmp/*.tar.gz -C /tmp/'"
                 sh "ssh -o StrictHostKeyChecking=no jullianna_03_hroundb_com@35.240.131.22 'rm -rf /var/www/html/*'"
                 sh "ssh -o StrictHostKeyChecking=no jullianna_03_hroundb_com@35.240.131.22 'mv /tmp/dist/employee-management/* /var/www/html/'"
